@@ -11,29 +11,31 @@
 
 #include <xc.h>
 #include <pic16f877a.h>
+#include "uart.h"
 
 void main(){
-    TRISD = 0b00000000;//Define a porta D como saída de dados
-    unsigned char PORT1505474 = 0b11111111; //Variável inserida para atender ao requisito de identificação pessoal
-    PORTB = PORT1505474; //Apaga todos os leds
+    unsigned char recebido;
+    TRISD = 0b00000000;
+    PORTD = 0b11111111;
+    UART_Init(9600);
     while(1){
-        PORTD = 0b01111110;//Acende os leds 1 e 8
-        __delay_ms(1000);
-        PORTD = PORT1505474;
-        PORTD = 0b10111101;//Acende os leds 2 e 7
-        __delay_ms(1000);
-        PORTD = PORT1505474;
-        PORTD = 0b11011011; //Acende os leds 3 e 6
-        __delay_ms(1000);
-        PORTD = PORT1505474;
-        PORTD = 0b11100111;//Acende os leds 4 e 5
-        __delay_ms(1000);
-        PORTD = PORT1505474;
-        PORTD = 0b11011011;//Acende os leds 3 e 6
-        __delay_ms(1000);
-        PORTD = PORT1505474;
-        PORTD = 0b10111101;//Acende os leds 2 e 7
-        __delay_ms(1000);
-        PORTD = PORT1505474;
+        if(UART_Data_Ready()){
+            recebido = UART_Read();
+            if(recebido == 'a'){
+                PORTD = 0b11111110;
+            }
+            else if(recebido == 'b'){
+                PORTD = 0b10111111;
+            }
+            else if(recebido == 'c'){
+                PORTD = 0b11110000;
+            }
+            else if(recebido == 'd'){
+                PORTD = 0b00000000;
+            }
+            else if(recebido == 's'){
+                PORTD = 0b11111111;
+            }
+        }
     }
 }
